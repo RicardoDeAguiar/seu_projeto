@@ -1,0 +1,46 @@
+?php
+include 'db.php';
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $nome = $_POST['nome'];
+    $email = $_POST['email'];
+    $telefone = $_POST['telefone'];
+
+    // Prepara a instrução para evitar injeções SQL
+    $stmt = $conn->prepare("INSERT INTO clientes (nome, email, telefone) VALUES (?, ?, ?)");
+    $stmt->bind_param("sss", $nome, $email, $telefone); // "sss" indica que todos os parâmetros são strings
+
+    if ($stmt->execute()) {
+        header('Location: index.php'); // Redireciona após a adição
+        exit();
+    } else {
+        echo "Erro: " . $stmt->error; // Exibe erro se ocorrer
+    }
+
+    $stmt->close(); // Fecha a instrução
+}
+
+$conn->close(); // Fecha a conexão
+?>
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Adicionar Cliente</title>
+</head>
+<body>
+    <h1>Adicionar Cliente</h1>
+    <form method="POST" action="">
+        <label>Nome:</label>
+        <input type="text" name="nome" required>
+        <label>Email:</label>
+        <input type="email" name="email" required>
+        <label>Telefone:</label>
+        <input type="text" name="telefone" required>
+        <button type="submit">Salvar</button>
+    </form>
+</body>
+</html>
