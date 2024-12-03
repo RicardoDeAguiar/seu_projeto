@@ -1,0 +1,54 @@
+<?php
+include 'db.php';
+
+// Verifica se o ID foi passado e é um número
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $id = $_GET['id'];
+    
+    // Busca o cliente no banco de dados
+    $stmt = $conn->prepare("SELECT * FROM clientes WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $cliente = $result->fetch_assoc();
+    $stmt->close();
+
+    // Verifica se o cliente foi encontrado
+    if (!$cliente) {
+        echo "Cliente não encontrado.";
+        exit();
+    }
+
+    // Atualiza o cliente se o formulário for enviado
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        $nome = $_POST['nome'];
+        $email = $_POST['email'];
+        $telefone = $_POST['telefone'];
+
+        // Prepara a instrução para atualizar o cliente
+        $stmt = $conn->prepare("UPDATE clientes SET nome=?, email=?, telefone=? WHERE id=?");
+        $stmt->bind_param("sssi", $nome, $email, $telefone, $id); // "sssi" indica tipos dos parâmetros
+
+        if ($stmt->execute()) {
+            header('Location: index.php'); // Redireciona após a atualização
+            exit();
+        } else {
+            echo "Erro: " . $stmt->error; // Exibe erro se ocorrer
+        }
+
+        $stmt->close(); // Fecha a instrução
+    }
+} else {
+    echo "ID inválido.";
+    exit();
+}
+
+$conn->close(); // Fecha a conexão
+?>
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css
