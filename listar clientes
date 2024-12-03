@@ -1,0 +1,46 @@
+<?php
+include 'db.php';
+
+$result = $conn->query("SELECT * FROM clientes");
+?>
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Gerenciador de Clientes</title>
+</head>
+<body>
+    <h1>Lista de Clientes</h1>
+    <a href="create.php" class="btn">Adicionar Cliente</a>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Telefone</th>
+            <th>Ações</th>
+        </tr>
+        <?php if ($result->num_rows > 0): ?>
+            <?php while ($row = $result->fetch_assoc()): ?>
+                <tr>
+                    <td><?= htmlspecialchars($row['id']) ?></td>
+                    <td><?= htmlspecialchars($row['nome']) ?></td>
+                    <td><?= htmlspecialchars($row['email']) ?></td>
+                    <td><?= htmlspecialchars($row['telefone']) ?></td>
+                    <td>
+                        <a href="update.php?id=<?= htmlspecialchars($row['id']) ?>" class="btn">Editar</a>
+                        <a href="delete.php?id=<?= htmlspecialchars($row['id']) ?>" class="btn btn-danger" onclick="return confirm('Tem certeza?')">Excluir</a>
+                    </td>
+                </tr>
+            <?php endwhile; ?>
+        <?php else: ?>
+            <tr>
+                <td colspan="5" style="text-align:center;">Nenhum cliente encontrado.</td>
+            </tr>
+        <?php endif; ?>
+    </table>
+</body>
+</html>
